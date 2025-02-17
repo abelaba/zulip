@@ -108,7 +108,14 @@ export function postprocess_content(html: string): string {
         "div.message_inline_image > a > img",
     )) {
         inline_img.setAttribute("loading", "lazy");
-        if (inline_img.src.startsWith("/user_uploads/thumbnail/")) {
+        const image_url = new URL(inline_img.src, window.location.origin);
+        // Check if the image is thumbnailed by Zulip by checking if the image
+        // originates from the same server as the website and if the image's
+        // pathname starts with "/user_uploads/thumbnail/".
+        if (
+            image_url.origin === window.location.origin &&
+            image_url.pathname.startsWith("/user_uploads/thumbnail/")
+        ) {
             let thumbnail_name = thumbnail.preferred_format.name;
             if (inline_img.dataset.animated === "true") {
                 if (
